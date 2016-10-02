@@ -1,4 +1,4 @@
-html, body
+html, body, application, #ace
   height: 100%
 
 body
@@ -6,9 +6,26 @@ body
   font-weight: 300
   margin: 0
 
+application
   display: flex
 
-iframe
-  border: none
-  border-right: 1px solid rgba(0, 0, 0, 0.5)
-  flex: 0 1 auto
+viewport
+  flex: 1 1 auto
+  position: relative
+
+  > *
+    position: absolute
+    margin: auto
+    left: 0
+    right: 0
+    top: 0
+    bottom: 0
+
+#ace
+  flex: 1 1 auto
+
+button.run
+  position: absolute
+  top: 8px
+  right: 8px
+  z-index: 1

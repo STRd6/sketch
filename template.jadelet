@@ -1,0 +1,5 @@
+application
+  #ace
+  button.run(click=@run) Run
+  viewport
+    = @canvas

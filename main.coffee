@@ -1,38 +1,38 @@
+require "cornerstone"
+
 do applyStyle = ->
   style = document.createElement 'style'
   style.innerHTML = require "./style"
   document.head.appendChild style
 
-Postmaster = require 'postmaster'
-
-consoleWindow = (url, handlers, options={}) ->
-  frame = document.createElement 'iframe'
-  frame.src = url
-
-  postmaster = Postmaster(handlers)
-  postmaster.remoteTarget = -> 
-    frame.contentWindow
-
-  # Return a proxy for easy Postmastering
-  proxy = new Proxy postmaster,
-    get: (target, property, receiver) ->
-      target[property] or
-      (args...) ->
-        target.invokeRemote property, args...
-
-  proxy.element = frame
-
-  return proxy
-
-c = consoleWindow "https://danielx.net/coffee-console",
-  ready: ->
-    console.log 'ready'
-
-document.body.appendChild c.element
-
 TouchCanvas = require "touch-canvas"
 
 canvas = TouchCanvas()
-canvas.fill("blue")
 
-document.body.appendChild canvas.element()
+run = ->
+  program = CoffeeScript.compile editor.getValue(), bare: true
+  execWithContext program,
+    module: canvas
+
+Template = require("./template")
+document.body.appendChild Template
+  canvas: canvas.element()
+  run: run
+
+aceShim = require("./lib/ace-shim")()
+
+program = PACKAGE.source["program/1.coffee"].content
+
+global.editor = aceShim.aceEditor()
+editor.setSession aceShim.initSession program, "coffee"
+editor.focus()
+
+execWithContext = (program, context={}) ->
+  module = context.module ? {}
+
+  args = Object.keys(context)
+  values = args.map (name) -> context[name]
+
+  Function(args..., program).apply(module, values)
+
+run()

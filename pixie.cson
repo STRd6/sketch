@@ -1,3 +1,8 @@
 dependencies:
+  "cornerstone": "distri/cornerstone:master"
   "touch-canvas": "distri/touch-canvas:master"
-  postmaster: "distri/postmaster:v0.5.0"
+remoteDependencies: [
+  "https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/ace.js"
+  "https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/ext-language_tools.js"
+  "https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.7.1/coffee-script.min.js"
+]
