@@ -27,12 +27,23 @@ global.editor = aceShim.aceEditor()
 editor.setSession aceShim.initSession program, "coffee"
 editor.focus()
 
+update = ->
+
 execWithContext = (program, context={}) ->
   module = context.module ? {}
 
   args = Object.keys(context)
   values = args.map (name) -> context[name]
 
-  Function(args..., program).apply(module, values)
+  update = Function(args..., program).apply(module, values)
 
 run()
+
+t = 0
+dt = 1/60
+step = ->
+  update.call(canvas, t)
+  t += dt
+  requestAnimationFrame step
+
+step()
