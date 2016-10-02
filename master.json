@@ -12,46 +12,62 @@
       "mode": "100644",
       "type": "blob"
     },
-    "pixie.cson": {
-      "path": "pixie.cson",
-      "content": "dependencies:\n  \"cornerstone\": \"distri/cornerstone:master\"\n  \"touch-canvas\": \"distri/touch-canvas:master\"\nremoteDependencies: [\n  \"https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/ace.js\"\n  \"https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/ext-language_tools.js\"\n  \"https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.7.1/coffee-script.min.js\"\n]\n",
-      "mode": "100644"
+    "lib/ace-shim.coffee": {
+      "path": "lib/ace-shim.coffee",
+      "content": "ace.require(\"ace/ext/language_tools\")\r\n\r\naceEditor = ace.edit \"ace\"\r\naceEditor.$blockScrolling = Infinity\r\naceEditor.setOptions\r\n  fontSize: \"16px\"\r\n  enableBasicAutocompletion: true\r\n  enableLiveAutocompletion: true\r\n\r\nmodule.exports = ->\r\n  aceEditor: ->\r\n    aceEditor\r\n\r\n  initSession: (content, mode) ->\r\n    session = ace.createEditSession(content)\r\n\r\n    session.setMode(\"ace/mode/#{mode}\")\r\n\r\n    session.setUseSoftTabs true\r\n    session.setTabSize 2\r\n\r\n    aceEditor.setOptions\r\n      highlightActiveLine: true\r\n\r\n    return session\r\n",
+      "mode": "100644",
+      "type": "blob"
     },
     "main.coffee": {
       "path": "main.coffee",
-      "content": "require \"cornerstone\"\n\ndo applyStyle = ->\n  style = document.createElement 'style'\n  style.innerHTML = require \"./style\"\n  document.head.appendChild style\n\nTouchCanvas = require \"touch-canvas\"\n\ncanvas = TouchCanvas()\n\nrun = ->\n  program = CoffeeScript.compile editor.getValue(), bare: true\n  execWithContext program,\n    module: canvas\n\nTemplate = require(\"./template\")\ndocument.body.appendChild Template\n  canvas: canvas.element()\n  run: run\n\naceShim = require(\"./lib/ace-shim\")()\n\nprogram = PACKAGE.source[\"program/1.coffee\"].content\n\nglobal.editor = aceShim.aceEditor()\neditor.setSession aceShim.initSession program, \"coffee\"\neditor.focus()\n\nexecWithContext = (program, context={}) ->\n  module = context.module ? {}\n\n  args = Object.keys(context)\n  values = args.map (name) -> context[name]\n\n  Function(args..., program).apply(module, values)\n\nrun()\n",
-      "mode": "100644"
+      "content": "require \"cornerstone\"\n\ndo applyStyle = ->\n  style = document.createElement 'style'\n  style.innerHTML = require \"./style\"\n  document.head.appendChild style\n\nTouchCanvas = require \"touch-canvas\"\n\ncanvas = TouchCanvas()\n\nrun = ->\n  program = CoffeeScript.compile editor.getValue(), bare: true\n  execWithContext program,\n    module: canvas\n\nTemplate = require(\"./template\")\ndocument.body.appendChild Template\n  canvas: canvas.element()\n  run: run\n\naceShim = require(\"./lib/ace-shim\")()\n\nprogram = PACKAGE.source[\"program/1.coffee\"].content\n\nglobal.editor = aceShim.aceEditor()\neditor.setSession aceShim.initSession program, \"coffee\"\neditor.focus()\n\nupdate = ->\n\nexecWithContext = (program, context={}) ->\n  module = context.module ? {}\n\n  args = Object.keys(context)\n  values = args.map (name) -> context[name]\n\n  update = Function(args..., program).apply(module, values)\n\nrun()\n\nt = 0\ndt = 1/60\nstep = ->\n  update.call(canvas, t)\n  t += dt\n  requestAnimationFrame step\n\nstep()\n",
+      "mode": "100644",
+      "type": "blob"
+    },
+    "pixie.cson": {
+      "path": "pixie.cson",
+      "content": "dependencies:\n  \"cornerstone\": \"distri/cornerstone:master\"\n  \"touch-canvas\": \"distri/touch-canvas:master\"\nremoteDependencies: [\n  \"https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/ace.js\"\n  \"https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/ext-language_tools.js\"\n  \"https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.7.1/coffee-script.min.js\"\n]\n",
+      "mode": "100644",
+      "type": "blob"
+    },
+    "program/1.coffee": {
+      "path": "program/1.coffee",
+      "content": "return (t) ->\n  {sin, cos, PI, min} = Math\n  canvas = this\n  width = @width()\n  height = @height()\n\n  center = Point(width, height).scale(0.5)\n\n  τ = PI * 2\n\n  rot = t * τ\n\n  @fill(\"black\")\n  a = min(1.5 + sin(rot + PI), 1)\n  fillColor = \"rgba(0, 0, 255, #{a})\"\n\n  @fill fillColor\n  @withTransform Matrix.rotation(τ/3 + rot/4, center), (canvas) ->\n    canvas.withTransform Matrix.scale(0.25, 0.25, center), ->\n      canvas.fill(\"red\")\n\n  n = 97\n  end = center.add(0, -600)\n  [0...n].forEach (i) ->\n    r = 255\n    b = 255 # if i % 2 then 255 else 128\n    canvas.withTransform Matrix.rotation(i * τ/n - rot/28, center), (canvas) ->\n      canvas.drawLine\n        start: center\n        end: end\n        color: \"rgba(#{r}, 0, #{b}, 1)\"\n",
+      "mode": "100644",
+      "type": "blob"
     },
     "style.styl": {
       "path": "style.styl",
       "content": "html, body, application, #ace\n  height: 100%\n\nbody\n  font-family: \"HelveticaNeue-Light\", \"Helvetica Neue Light\", \"Helvetica Neue\", Helvetica, Arial, \"Lucida Grande\", sans-serif\n  font-weight: 300\n  margin: 0\n\napplication\n  display: flex\n\nviewport\n  flex: 1 1 auto\n  position: relative\n\n  > *\n    position: absolute\n    margin: auto\n    left: 0\n    right: 0\n    top: 0\n    bottom: 0\n\n#ace\n  flex: 1 1 auto\n\nbutton.run\n  position: absolute\n  top: 8px\n  right: 8px\n  z-index: 1\n",
-      "mode": "100644"
-    },
-    "lib/ace-shim.coffee": {
-      "path": "lib/ace-shim.coffee",
-      "content": "ace.require(\"ace/ext/language_tools\")\r\n\r\naceEditor = ace.edit \"ace\"\r\naceEditor.$blockScrolling = Infinity\r\naceEditor.setOptions\r\n  fontSize: \"16px\"\r\n  enableBasicAutocompletion: true\r\n  enableLiveAutocompletion: true\r\n\r\nmodule.exports = ->\r\n  aceEditor: ->\r\n    aceEditor\r\n\r\n  initSession: (content, mode) ->\r\n    session = ace.createEditSession(content)\r\n\r\n    session.setMode(\"ace/mode/#{mode}\")\r\n\r\n    session.setUseSoftTabs true\r\n    session.setTabSize 2\r\n\r\n    aceEditor.setOptions\r\n      highlightActiveLine: true\r\n\r\n    return session\r\n",
-      "mode": "100644"
+      "mode": "100644",
+      "type": "blob"
     },
     "template.jadelet": {
       "path": "template.jadelet",
       "content": "application\r\n  #ace\r\n  button.run(click=@run) Run\r\n  viewport\r\n    = @canvas\r\n",
-      "mode": "100644"
-    },
-    "program/1.coffee": {
-      "path": "program/1.coffee",
-      "content": "canvas = this\nwidth = @width()\nheight = @height()\n\ncenter = Point(width, height).scale(0.5)\n\nτ = Math.PI * 2\n\n@fill \"blue\"\n@withTransform Matrix.rotation(τ/3, center), (canvas) ->\n  canvas.withTransform Matrix.scale(0.25, 0.25, center), ->\n    canvas.fill(\"red\")\n\nn = 97\n[0...n].forEach (i) ->\n  canvas.withTransform Matrix.rotation(i * τ/n, center), (canvas) ->\n    canvas.drawLine\n      start: center.add(0, -600)\n      end: center\n      color: \"rgba(255, 0, 255, 1)\"\n",
-      "mode": "100644"
+      "mode": "100644",
+      "type": "blob"
     }
   },
   "distribution": {
+    "lib/ace-shim": {
+      "path": "lib/ace-shim",
+      "content": "(function() {\n  var aceEditor;\n\n  ace.require(\"ace/ext/language_tools\");\n\n  aceEditor = ace.edit(\"ace\");\n\n  aceEditor.$blockScrolling = Infinity;\n\n  aceEditor.setOptions({\n    fontSize: \"16px\",\n    enableBasicAutocompletion: true,\n    enableLiveAutocompletion: true\n  });\n\n  module.exports = function() {\n    return {\n      aceEditor: function() {\n        return aceEditor;\n      },\n      initSession: function(content, mode) {\n        var session;\n        session = ace.createEditSession(content);\n        session.setMode(\"ace/mode/\" + mode);\n        session.setUseSoftTabs(true);\n        session.setTabSize(2);\n        aceEditor.setOptions({\n          highlightActiveLine: true\n        });\n        return session;\n      }\n    };\n  };\n\n}).call(this);\n",
+      "type": "blob"
+    },
+    "main": {
+      "path": "main",
+      "content": "(function() {\n  var Template, TouchCanvas, aceShim, applyStyle, canvas, dt, execWithContext, program, run, step, t, update,\n    __slice = [].slice;\n\n  require(\"cornerstone\");\n\n  (applyStyle = function() {\n    var style;\n    style = document.createElement('style');\n    style.innerHTML = require(\"./style\");\n    return document.head.appendChild(style);\n  })();\n\n  TouchCanvas = require(\"touch-canvas\");\n\n  canvas = TouchCanvas();\n\n  run = function() {\n    var program;\n    program = CoffeeScript.compile(editor.getValue(), {\n      bare: true\n    });\n    return execWithContext(program, {\n      module: canvas\n    });\n  };\n\n  Template = require(\"./template\");\n\n  document.body.appendChild(Template({\n    canvas: canvas.element(),\n    run: run\n  }));\n\n  aceShim = require(\"./lib/ace-shim\")();\n\n  program = PACKAGE.source[\"program/1.coffee\"].content;\n\n  global.editor = aceShim.aceEditor();\n\n  editor.setSession(aceShim.initSession(program, \"coffee\"));\n\n  editor.focus();\n\n  update = function() {};\n\n  execWithContext = function(program, context) {\n    var args, module, values, _ref;\n    if (context == null) {\n      context = {};\n    }\n    module = (_ref = context.module) != null ? _ref : {};\n    args = Object.keys(context);\n    values = args.map(function(name) {\n      return context[name];\n    });\n    return update = Function.apply(null, __slice.call(args).concat([program])).apply(module, values);\n  };\n\n  run();\n\n  t = 0;\n\n  dt = 1 / 60;\n\n  step = function() {\n    update.call(canvas, t);\n    t += dt;\n    return requestAnimationFrame(step);\n  };\n\n  step();\n\n}).call(this);\n",
+      "type": "blob"
+    },
     "pixie": {
       "path": "pixie",
       "content": "module.exports = {\"dependencies\":{\"cornerstone\":\"distri/cornerstone:master\",\"touch-canvas\":\"distri/touch-canvas:master\"},\"remoteDependencies\":[\"https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/ace.js\",\"https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/ext-language_tools.js\",\"https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.7.1/coffee-script.min.js\"]};",
       "type": "blob"
     },
-    "main": {
-      "path": "main",
-      "content": "(function() {\n  var Template, TouchCanvas, aceShim, applyStyle, canvas, execWithContext, program, run,\n    __slice = [].slice;\n\n  require(\"cornerstone\");\n\n  (applyStyle = function() {\n    var style;\n    style = document.createElement('style');\n    style.innerHTML = require(\"./style\");\n    return document.head.appendChild(style);\n  })();\n\n  TouchCanvas = require(\"touch-canvas\");\n\n  canvas = TouchCanvas();\n\n  run = function() {\n    var program;\n    program = CoffeeScript.compile(editor.getValue(), {\n      bare: true\n    });\n    return execWithContext(program, {\n      module: canvas\n    });\n  };\n\n  Template = require(\"./template\");\n\n  document.body.appendChild(Template({\n    canvas: canvas.element(),\n    run: run\n  }));\n\n  aceShim = require(\"./lib/ace-shim\")();\n\n  program = PACKAGE.source[\"program/1.coffee\"].content;\n\n  global.editor = aceShim.aceEditor();\n\n  editor.setSession(aceShim.initSession(program, \"coffee\"));\n\n  editor.focus();\n\n  execWithContext = function(program, context) {\n    var args, module, values, _ref;\n    if (context == null) {\n      context = {};\n    }\n    module = (_ref = context.module) != null ? _ref : {};\n    args = Object.keys(context);\n    values = args.map(function(name) {\n      return context[name];\n    });\n    return Function.apply(null, __slice.call(args).concat([program])).apply(module, values);\n  };\n\n  run();\n\n}).call(this);\n",
+    "program/1": {
+      "path": "program/1",
+      "content": "(function() {\n  return function(t) {\n    var PI, a, canvas, center, cos, end, fillColor, height, min, n, rot, sin, width, τ, _i, _results;\n    sin = Math.sin, cos = Math.cos, PI = Math.PI, min = Math.min;\n    canvas = this;\n    width = this.width();\n    height = this.height();\n    center = Point(width, height).scale(0.5);\n    τ = PI * 2;\n    rot = t * τ;\n    this.fill(\"black\");\n    a = min(1.5 + sin(rot + PI), 1);\n    fillColor = \"rgba(0, 0, 255, \" + a + \")\";\n    this.fill(fillColor);\n    this.withTransform(Matrix.rotation(τ / 3 + rot / 4, center), function(canvas) {\n      return canvas.withTransform(Matrix.scale(0.25, 0.25, center), function() {\n        return canvas.fill(\"red\");\n      });\n    });\n    n = 97;\n    end = center.add(0, -600);\n    return (function() {\n      _results = [];\n      for (var _i = 0; 0 <= n ? _i < n : _i > n; 0 <= n ? _i++ : _i--){ _results.push(_i); }\n      return _results;\n    }).apply(this).forEach(function(i) {\n      var b, r;\n      r = 255;\n      b = 255;\n      return canvas.withTransform(Matrix.rotation(i * τ / n - rot / 28, center), function(canvas) {\n        return canvas.drawLine({\n          start: center,\n          end: end,\n          color: \"rgba(\" + r + \", 0, \" + b + \", 1)\"\n        });\n      });\n    });\n  };\n\n}).call(this);\n",
       "type": "blob"
     },
     "style": {
@@ -59,19 +75,9 @@
       "content": "module.exports = \"html,\\nbody,\\napplication,\\n#ace {\\n  height: 100%;\\n}\\nbody {\\n  font-family: \\\"HelveticaNeue-Light\\\", \\\"Helvetica Neue Light\\\", \\\"Helvetica Neue\\\", Helvetica, Arial, \\\"Lucida Grande\\\", sans-serif;\\n  font-weight: 300;\\n  margin: 0;\\n}\\napplication {\\n  display: flex;\\n}\\nviewport {\\n  flex: 1 1 auto;\\n  position: relative;\\n}\\nviewport > * {\\n  position: absolute;\\n  margin: auto;\\n  left: 0;\\n  right: 0;\\n  top: 0;\\n  bottom: 0;\\n}\\n#ace {\\n  flex: 1 1 auto;\\n}\\nbutton.run {\\n  position: absolute;\\n  top: 8px;\\n  right: 8px;\\n  z-index: 1;\\n}\\n\";",
       "type": "blob"
     },
-    "lib/ace-shim": {
-      "path": "lib/ace-shim",
-      "content": "(function() {\n  var aceEditor;\n\n  ace.require(\"ace/ext/language_tools\");\n\n  aceEditor = ace.edit(\"ace\");\n\n  aceEditor.$blockScrolling = Infinity;\n\n  aceEditor.setOptions({\n    fontSize: \"16px\",\n    enableBasicAutocompletion: true,\n    enableLiveAutocompletion: true\n  });\n\n  module.exports = function() {\n    return {\n      aceEditor: function() {\n        return aceEditor;\n      },\n      initSession: function(content, mode) {\n        var session;\n        session = ace.createEditSession(content);\n        session.setMode(\"ace/mode/\" + mode);\n        session.setUseSoftTabs(true);\n        session.setTabSize(2);\n        aceEditor.setOptions({\n          highlightActiveLine: true\n        });\n        return session;\n      }\n    };\n  };\n\n}).call(this);\n",
-      "type": "blob"
-    },
     "template": {
       "path": "template",
       "content": "module.exports = function(data) {\n  \"use strict\";\n  return (function() {\n    var __root;\n    __root = require(\"/lib/hamlet-runtime\")(this);\n    __root.buffer(__root.element(\"application\", this, {}, function(__root) {\n      __root.buffer(__root.element(\"div\", this, {\n        id: [\"ace\"]\n      }, function(__root) {}));\n      __root.buffer(__root.element(\"button\", this, {\n        \"class\": [\"run\"],\n        \"click\": this.run\n      }, function(__root) {\n        __root.buffer(\"Run\\n\");\n      }));\n      __root.buffer(__root.element(\"viewport\", this, {}, function(__root) {\n        __root.buffer(this.canvas);\n      }));\n    }));\n    return __root.root;\n  }).call(data);\n};\n",
-      "type": "blob"
-    },
-    "program/1": {
-      "path": "program/1",
-      "content": "(function() {\n  var canvas, center, height, n, width, τ, _i, _results;\n\n  canvas = this;\n\n  width = this.width();\n\n  height = this.height();\n\n  center = Point(width, height).scale(0.5);\n\n  τ = Math.PI * 2;\n\n  this.fill(\"blue\");\n\n  this.withTransform(Matrix.rotation(τ / 3, center), function(canvas) {\n    return canvas.withTransform(Matrix.scale(0.25, 0.25, center), function() {\n      return canvas.fill(\"red\");\n    });\n  });\n\n  n = 97;\n\n  (function() {\n    _results = [];\n    for (var _i = 0; 0 <= n ? _i < n : _i > n; 0 <= n ? _i++ : _i--){ _results.push(_i); }\n    return _results;\n  }).apply(this).forEach(function(i) {\n    return canvas.withTransform(Matrix.rotation(i * τ / n, center), function(canvas) {\n      return canvas.drawLine({\n        start: center.add(0, -600),\n        end: center,\n        color: \"rgba(255, 0, 255, 1)\"\n      });\n    });\n  });\n\n}).call(this);\n",
       "type": "blob"
     },
     "lib/hamlet-runtime": {
