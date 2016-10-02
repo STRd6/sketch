@@ -4,6 +4,9 @@ return (t) ->
   width = @width()
   height = @height()
 
+  context = canvas.context()
+  context.lineCap = "round"
+
   center = Point(width, height).scale(0.5)
 
   τ = PI * 2
@@ -26,6 +29,6 @@ return (t) ->
     b = 255 # if i % 2 then 255 else 128
     canvas.withTransform Matrix.rotation(i * τ/n - rot/28, center), (canvas) ->
       canvas.drawLine
-        start: center
+        start: center.add(Point.fromAngle(-rot / 30).scale(200 * sin(rot/5)))
         end: end
         color: "rgba(#{r}, 0, #{b}, 1)"
