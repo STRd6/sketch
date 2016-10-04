@@ -10,7 +10,7 @@ module.exports = (options={}) ->
   {fn, dt, duration, width, height} = options
 
   t = 0
-  dt ?= 1000/60
+  dt ?= 1/60
   width ?= 400
   height ?= 400
   duration ?= 1
@@ -21,9 +21,11 @@ module.exports = (options={}) ->
 
   new Promise (resolve, reject) ->
     gif = new GIF
-      workers: 2
-      quality: 10
+      workers: 4
+      quality: 100
       workerScript: workerURL
+      width: width
+      height: height
 
     # add an image element
     # gif.addFrame(imageElement);
@@ -37,15 +39,21 @@ module.exports = (options={}) ->
     gif.on 'finished', (blob) ->
       resolve blob
 
+    i = 0
     doFrame = ->
+      console.log "frame: ", i, t
+
+      fn.call(canvas, t, canvas)
+      # TODO: delay accumulates rounding errors here
+      gif.addFrame(canvas.context(), copy: true, delay: dt * 1000)
+
+      t += dt
       if t >= duration
         gif.render()
       else
-        fn.call(canvas, t, canvas)
-        gif.addFrame(canvas.context(), delay: dt)
-
-        t += dt
         requestAnimationFrame doFrame
+
+      i += 1
 
     doFrame()
 

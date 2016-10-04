@@ -7,7 +7,11 @@ do applyStyle = ->
 
 TouchCanvas = require "touch-canvas"
 
-canvas = TouchCanvas()
+width = height = 360
+
+canvas = TouchCanvas
+  width: 360
+  height: 360
 
 run = ->
   program = CoffeeScript.compile editor.getValue(), bare: true
@@ -21,7 +25,7 @@ document.body.appendChild Template
 
 aceShim = require("./lib/ace-shim")()
 
-program = PACKAGE.source["program/3.coffee"].content
+program = PACKAGE.source["program/4.coffee"].content
 
 global.editor = aceShim.aceEditor()
 editor.setSession aceShim.initSession program, "coffee"
@@ -48,12 +52,16 @@ step = ->
 
 step()
 
-renderGif = require "./render-gif"
+-> # TODO: Hook up render gif UI
+  renderGif = require "./render-gif"
 
-renderGif
-  fn: update
-  width: 400
-  height: 400
-  duration: 3
-.then (blob) ->
-  window.open(URL.createObjectURL(blob))
+  renderGif
+    fn: update
+    width: width
+    height: height
+    duration: 2.9999
+    dt: 1/30
+  .then (blob) ->
+    img = document.createElement "img"
+    img.src = URL.createObjectURL(blob)
+    document.body.appendChild img
