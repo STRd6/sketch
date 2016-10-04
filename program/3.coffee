@@ -14,12 +14,12 @@ return (t, canvas) ->
   overallRotation = - rot / 30
 
   n = 240
-  end = center.add(0, -200)
+  end = center.add(0, -center.x)
   [0...n].forEach (i) ->
     r = 255
     b = 255 # if i % 2 then 255 else 128
     canvas.withTransform Matrix.rotation(i * τ/n + overallRotation, center), (canvas) ->
       canvas.drawLine
-        start: center.add(Point.fromAngle(-rot / 10).scale(200 * sin(rot / 50 + i * τ / 80)))
+        start: center.add(Point.fromAngle(-rot / 10).scale(center.x * sin(rot / 50 + i * τ / 80)))
         end: end
         color: "rgba(#{r}, 0, #{b}, 1)"

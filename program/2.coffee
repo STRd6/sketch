@@ -10,17 +10,9 @@ return (t) ->
   center = Point(width, height).scale(0.5)
 
   τ = PI * 2
-
   rot = t * τ
 
-  @fill("black")
-  a = min(1.5 + sin(rot + PI), 1)
-  fillColor = "rgba(0, 0, 255, #{a})"
-
-  @fill "blue"#fillColor
-  @withTransform Matrix.rotation(τ/3 + rot/4, center), (canvas) ->
-    canvas.withTransform Matrix.scale(0.25, 0.25, center), ->
-      ;#canvas.fill("red")
+  @fill "blue"
 
   n = 97
   end = center.add(0, -600)
@@ -29,6 +21,6 @@ return (t) ->
     b = 255 # if i % 2 then 255 else 128
     canvas.withTransform Matrix.rotation(i * τ/n - rot/28, center), (canvas) ->
       canvas.drawLine
-        start: center.add(Point.fromAngle(-rot / 30).scale(200 * sin(rot / 5 + i * PI * 2 / 194)))
+        start: center.add(Point.fromAngle(-rot / 30).scale(center.x * sin(rot / 5 + i * PI * 2 / 194)))
         end: end
         color: "rgba(#{r}, 0, #{b}, 1)"
