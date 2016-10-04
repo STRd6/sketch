@@ -2,6 +2,8 @@ TouchCanvas = require "touch-canvas"
 
 GIF = require "./lib/gif"
 
+console.log GIF
+
 workerURL = URL.createObjectURL(new Blob([PACKAGE.source["lib/gif-worker.js"].content]))
 
 module.exports = (options={}) ->
@@ -11,8 +13,9 @@ module.exports = (options={}) ->
   dt ?= 1000/60
   width ?= 400
   height ?= 400
+  duration ?= 1
 
-  canvas = TouchCannvas
+  canvas = TouchCanvas
     width: width
     height: height
 

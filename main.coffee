@@ -47,3 +47,13 @@ step = ->
   requestAnimationFrame step
 
 step()
+
+renderGif = require "./render-gif"
+
+renderGif
+  fn: update
+  width: 400
+  height: 400
+  duration: 3
+.then (blob) ->
+  window.open(URL.createObjectURL(blob))
