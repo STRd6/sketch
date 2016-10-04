@@ -1,15 +1,15 @@
-return (t) ->
+return (t, canvas) ->
   {sin, cos, PI, min} = Math
   canvas = this
-  width = @width()
-  height = @height()
+  width = canvas.width()
+  height = canvas.height()
 
   center = Point(width, height).scale(0.5)
 
   τ = PI * 2
   rot = t * τ
 
-  @fill("black")
+  canvas.fill("black")
 
   overallRotation = - rot / 30
 

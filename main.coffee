@@ -42,7 +42,7 @@ run()
 t = 0
 dt = 1/60
 step = ->
-  update.call(canvas, t)
+  update.call(canvas, t, canvas)
   t += dt
   requestAnimationFrame step
 
