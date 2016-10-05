@@ -29,6 +29,8 @@ Template = require("./template")
 document.body.appendChild Template
   canvas: canvas.element()
   run: run
+  render: ->
+    renderWebm 2.9999
   reset: reset
   time: time
 
@@ -59,6 +61,22 @@ step = ->
   requestAnimationFrame step
 
 step()
+
+render ({duration, framerate}) ->
+  renderWebm = require "./render-webm"
+
+  renderWebm
+    fn: update
+    width: width
+    height: height
+    duration: duration
+    framerate: framerate
+  .then (blob) ->
+    video = document.createElement "video"
+    video.loop = true
+    video.autoplay = true
+    video.src = URL.createObjectURL(blob)
+    document.body.appendChild video
 
 -> # TODO: Hook up render gif UI
   renderGif = require "./render-gif"

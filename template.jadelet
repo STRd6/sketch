@@ -2,6 +2,7 @@ application
   span.time= @time
   #ace
   actions
+    button(click=@render) Render
     button(click=@reset) Reset
     button(click=@run) Run
   viewport
