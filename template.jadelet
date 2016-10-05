@@ -1,5 +1,8 @@
 application
+  span.time= @time
   #ace
-  button.run(click=@run) Run
+  actions
+    button(click=@reset) Reset
+    button(click=@run) Run
   viewport
     = @canvas

@@ -1,5 +1,7 @@
 require "cornerstone"
 
+time = Observable(0)
+
 do applyStyle = ->
   style = document.createElement 'style'
   style.innerHTML = require "./style"
@@ -8,6 +10,8 @@ do applyStyle = ->
 TouchCanvas = require "touch-canvas"
 
 width = height = 360
+t = 0
+dt = 1/60
 
 canvas = TouchCanvas
   width: 360
@@ -18,14 +22,19 @@ run = ->
   execWithContext program,
     module: canvas
 
+reset = ->
+  t = 0
+
 Template = require("./template")
 document.body.appendChild Template
   canvas: canvas.element()
   run: run
+  reset: reset
+  time: time
 
 aceShim = require("./lib/ace-shim")()
 
-program = PACKAGE.source["program/3.coffee"].content
+program = PACKAGE.source["program/5.coffee"].content
 
 global.editor = aceShim.aceEditor()
 editor.setSession aceShim.initSession program, "coffee"
@@ -43,9 +52,8 @@ execWithContext = (program, context={}) ->
 
 run()
 
-t = 0
-dt = 1/60
 step = ->
+  time t.toFixed(2)
   update.call(canvas, t, canvas)
   t += dt
   requestAnimationFrame step
