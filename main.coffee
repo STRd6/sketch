@@ -2,14 +2,14 @@ require "cornerstone"
 
 time = Observable(0)
 
-# {Modal} = UI = require "ui"
+{Modal} = UI = require "ui"
 
 do applyStyle = ->
   style = document.createElement 'style'
   style.innerHTML = [
-    # UI.Style.modal
+    UI.Style.modal
     require "./style"
-  ]
+  ].join("\n")
   document.head.appendChild style
 
 TouchCanvas = require "touch-canvas"
@@ -35,15 +35,18 @@ document.body.appendChild Template
   canvas: canvas.element()
   run: run
   render: ->
-    render
-      duration: 3
-      framerate: 30
+    form = document.createElement "div"
+    Modal.show form, (data) ->
+      render
+        duration: 2
+        framerate: 60
+
   reset: reset
   time: time
 
 aceShim = require("./lib/ace-shim")()
 
-program = PACKAGE.source["program/5.coffee"].content
+program = PACKAGE.source["program/6.coffee"].content
 
 global.editor = aceShim.aceEditor()
 editor.setSession aceShim.initSession program, "coffee"
@@ -85,15 +88,15 @@ render = ({duration, framerate}) ->
     video.src = URL.createObjectURL(blob)
     document.body.appendChild video
 
--> # TODO: Hook up render gif UI
+render = ({duration, framerate}) ->
   renderGif = require "./render-gif"
 
   renderGif
     fn: update
     width: width
     height: height
-    duration: 2.9999
-    dt: 1/30
+    duration: duration
+    dt: 1/framerate
   .then (blob) ->
     img = document.createElement "img"
     img.src = URL.createObjectURL(blob)

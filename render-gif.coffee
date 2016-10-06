@@ -27,15 +27,6 @@ module.exports = (options={}) ->
       width: width
       height: height
 
-    # add an image element
-    # gif.addFrame(imageElement);
-
-    # or a canvas element
-    # gif.addFrame(canvasElement, {delay: 200});
-
-    # or copy the pixels from a canvas context
-    # gif.addFrame(ctx, {copy: true});
-
     gif.on 'finished', (blob) ->
       resolve blob
 
@@ -44,10 +35,9 @@ module.exports = (options={}) ->
       console.log "frame: ", i, t
 
       fn.call(canvas, t, canvas)
-      # TODO: delay accumulates rounding errors here
       gif.addFrame(canvas.context(), copy: true, delay: dt * 1000)
 
-      t += dt
+      t = i * dt
       if t >= duration
         gif.render()
       else

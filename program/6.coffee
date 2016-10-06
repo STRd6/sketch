@@ -9,22 +9,22 @@ return (t, canvas) ->
   halfWidth = width/2
 
   τ = PI * 2
-  rot = t * τ
+  w = t * τ
 
-  canvas.fill("black")
+  canvas.fill("white")
 
-  n = 180
+  n = 25
   rate = 4
   dx = width / n
 
   [1...n].forEach (i) ->
-    phi = i * τ / 360 * t
+    phi = (i / n) * τ * abs(sin(w / 2 - τ / 8)) * 2
 
     canvas.drawLine
       start:
-        x: i * dx * sin(phi) + halfWidth
-        y: i * dx * cos(phi) + halfWidth
+        x: i * dx
+        y: halfWidth
       end:
-        x: i * dx * cos(phi) + halfWidth
-        y: i * dx * -sin(phi) + halfWidth
-      color: "hsl(#{i * 5}, 100%, 60%)"
+        x: i * dx
+        y: cos(phi + w / 2) * halfWidth + halfWidth
+      color: "black"
