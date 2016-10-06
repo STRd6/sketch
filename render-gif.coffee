@@ -23,7 +23,7 @@ module.exports = (options={}) ->
   new Promise (resolve, reject) ->
     gif = new GIF
       workers: 4
-      quality: 100
+      quality: 10
       workerScript: workerURL
       width: width
       height: height
