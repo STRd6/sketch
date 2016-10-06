@@ -14,7 +14,6 @@ return (t, canvas) ->
   canvas.fill("white")
 
   n = 25
-  rate = 4
   dx = width / n
 
   [1...n].forEach (i) ->

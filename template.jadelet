@@ -4,6 +4,7 @@ application
   actions
     button(click=@render) Render
     button(click=@reset) Reset
+    button(click=@pause) Pause
     button(click=@run) Run
   viewport
     = @canvas

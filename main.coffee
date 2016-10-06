@@ -30,6 +30,8 @@ run = ->
 reset = ->
   t = 0
 
+paused = false
+
 Template = require("./template")
 document.body.appendChild Template
   canvas: canvas.element()
@@ -40,13 +42,15 @@ document.body.appendChild Template
       render
         duration: 2
         framerate: 60
+  pause: ->
+    paused = !paused
 
   reset: reset
   time: time
 
 aceShim = require("./lib/ace-shim")()
 
-program = PACKAGE.source["program/6.coffee"].content
+program = PACKAGE.source["program/7.coffee"].content
 
 global.editor = aceShim.aceEditor()
 editor.setSession aceShim.initSession program, "coffee"
@@ -67,7 +71,7 @@ run()
 step = ->
   time t.toFixed(2)
   update.call(canvas, t, canvas)
-  t += dt
+  t += dt unless paused
   requestAnimationFrame step
 
 step()
