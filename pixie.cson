@@ -1,6 +1,7 @@
 dependencies:
   "cornerstone": "distri/cornerstone:master"
   "touch-canvas": "distri/touch-canvas:master"
+  "ui": "STRd6/ui:master"
 remoteDependencies: [
   "https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/ace.js"
   "https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/ext-language_tools.js"

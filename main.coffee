@@ -2,9 +2,14 @@ require "cornerstone"
 
 time = Observable(0)
 
+# {Modal} = UI = require "ui"
+
 do applyStyle = ->
   style = document.createElement 'style'
-  style.innerHTML = require "./style"
+  style.innerHTML = [
+    # UI.Style.modal
+    require "./style"
+  ]
   document.head.appendChild style
 
 TouchCanvas = require "touch-canvas"
@@ -30,7 +35,9 @@ document.body.appendChild Template
   canvas: canvas.element()
   run: run
   render: ->
-    renderWebm 2.9999
+    render
+      duration: 3
+      framerate: 30
   reset: reset
   time: time
 
@@ -62,7 +69,7 @@ step = ->
 
 step()
 
-render ({duration, framerate}) ->
+render = ({duration, framerate}) ->
   renderWebm = require "./render-webm"
 
   renderWebm
