@@ -96,7 +96,7 @@ render = ({duration, framerate}) ->
     width: width
     height: height
     duration: duration
-    dt: 1/framerate
+    framerate: framerate
   .then (blob) ->
     img = document.createElement "img"
     img.src = URL.createObjectURL(blob)

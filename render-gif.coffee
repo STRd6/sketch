@@ -7,13 +7,14 @@ console.log GIF
 workerURL = URL.createObjectURL(new Blob([PACKAGE.source["lib/gif-worker.js"].content]))
 
 module.exports = (options={}) ->
-  {fn, dt, duration, width, height} = options
+  {fn, framerate, duration, width, height} = options
 
   t = 0
-  dt ?= 1/60
   width ?= 400
   height ?= 400
   duration ?= 1
+  framerate ?= 30
+  dt = 1/framerate
 
   canvas = TouchCanvas
     width: width
@@ -35,15 +36,15 @@ module.exports = (options={}) ->
       console.log "frame: ", i, t
 
       fn.call(canvas, t, canvas)
+      # TODO: Make sure this dt doesn't accumulate errors
       gif.addFrame(canvas.context(), copy: true, delay: dt * 1000)
 
-      t = i * dt
+      i += 1
+      t = i / framerate
       if t >= duration
         gif.render()
       else
         requestAnimationFrame doFrame
-
-      i += 1
 
     doFrame()
 
