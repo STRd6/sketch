@@ -32,16 +32,36 @@ reset = ->
 
 paused = false
 
+RenderTemplate = require "./templates/render"
+
+renderOptions =
+  duration: Observable(2)
+  framerate: Observable(30)
+  format: Observable "gif"
+  formatOptions: Observable [
+    "gif"
+    "webm"
+  ]
+  submit: (e) ->
+    e.preventDefault()
+    Modal.hide(renderOptions)
+    # TODO: Display progress bar
+    # TODO: Cancellable render
+
 Template = require("./template")
 document.body.appendChild Template
   canvas: canvas.element()
   run: run
   render: ->
-    form = document.createElement "div"
+    form = RenderTemplate renderOptions
     Modal.show form, (data) ->
-      render
-        duration: 2
-        framerate: 60
+      if data
+        render[data.format()]
+          duration: data.duration()
+          framerate: data.framerate()
+      else
+        console.log "cancelled"
+
   pause: ->
     paused = !paused
 
@@ -50,7 +70,7 @@ document.body.appendChild Template
 
 aceShim = require("./lib/ace-shim")()
 
-program = PACKAGE.source["program/7.coffee"].content
+program = PACKAGE.source["program/8.coffee"].content
 
 global.editor = aceShim.aceEditor()
 editor.setSession aceShim.initSession program, "coffee"
@@ -70,38 +90,40 @@ run()
 
 step = ->
   time t.toFixed(2)
-  update.call(canvas, t, canvas)
+  try
+    update.call(canvas, t, canvas)
   t += dt unless paused
   requestAnimationFrame step
 
 step()
 
-render = ({duration, framerate}) ->
-  renderWebm = require "./render-webm"
+render = 
+  webm: ({duration, framerate}) ->
+    renderWebm = require "./render-webm"
 
-  renderWebm
-    fn: update
-    width: width
-    height: height
-    duration: duration
-    framerate: framerate
-  .then (blob) ->
-    video = document.createElement "video"
-    video.loop = true
-    video.autoplay = true
-    video.src = URL.createObjectURL(blob)
-    document.body.appendChild video
+    renderWebm
+      fn: update
+      width: width
+      height: height
+      duration: duration
+      framerate: framerate
+    .then (blob) ->
+      video = document.createElement "video"
+      video.loop = true
+      video.autoplay = true
+      video.src = URL.createObjectURL(blob)
+      document.body.appendChild video
 
-render = ({duration, framerate}) ->
-  renderGif = require "./render-gif"
-
-  renderGif
-    fn: update
-    width: width
-    height: height
-    duration: duration
-    framerate: framerate
-  .then (blob) ->
-    img = document.createElement "img"
-    img.src = URL.createObjectURL(blob)
-    document.body.appendChild img
+  gif: ({duration, framerate}) ->
+    renderGif = require "./render-gif"
+  
+    renderGif
+      fn: update
+      width: width
+      height: height
+      duration: duration
+      framerate: framerate
+    .then (blob) ->
+      img = document.createElement "img"
+      img.src = URL.createObjectURL(blob)
+      document.body.appendChild img

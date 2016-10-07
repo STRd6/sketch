@@ -1,3 +1,6 @@
+*
+  box-sizing: border-box
+
 html, body, application, #ace
   height: 100%
 
@@ -29,7 +32,7 @@ actions
   top: 8px
   right: 8px
   z-index: 1
-  
+
   > button
     margin-right: 1em
 
@@ -38,3 +41,44 @@ actions
   position: absolute
   bottom: 1em
   right: 1em
+
+form
+  display: inline-block
+  padding: 2em
+  width: 280px
+
+  > h1
+    font-size: 1.5em
+    margin-top: 0
+    text-align: center
+
+  > label
+    display: block
+
+    > h2
+      display: inline-block
+      margin-top: 0
+      font-size: 1em
+      text-align: right
+      padding-right: 1em
+      width: 140px
+
+  > button
+    font-size: 1.25em
+    width: 100%
+
+input.small
+  width: 40px
+
+#modal
+  &.active
+    display: flex
+    align-items: center
+    justify-content: center
+
+  > *
+    flex: 1
+    top: initial
+    bottom: initial
+    left: initial
+    right: initial

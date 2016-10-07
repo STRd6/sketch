@@ -1,0 +1,15 @@
+form(@submit)
+  h1 Render
+  label
+    h2 Duration (s)
+    input.small(value=@duration)
+
+  label
+    h2 Framerate (fps)
+    input.small(value=@framerate)
+
+  label
+    h2 Format
+    select(options=@formatOptions value=@format)
+
+  button Go!
