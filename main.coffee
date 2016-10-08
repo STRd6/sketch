@@ -70,7 +70,7 @@ document.body.appendChild Template
 
 aceShim = require("./lib/ace-shim")()
 
-program = PACKAGE.source["program/8.coffee"].content
+program = PACKAGE.source["program/9.coffee"].content
 
 global.editor = aceShim.aceEditor()
 editor.setSession aceShim.initSession program, "coffee"
