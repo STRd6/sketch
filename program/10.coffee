@@ -9,8 +9,13 @@
   value: 1
   step: 0.25
 
+@param "n",
+  type: "number"
+  value: 800
+  step: 1
+
 return (t, canvas, params) ->
-  {RD, TD} = params
+  {RD, TD, n} = params
   {abs, sin, cos, PI, min, max, floor} = Math
   canvas = this
   width = canvas.width()
@@ -24,7 +29,6 @@ return (t, canvas, params) ->
 
   canvas.fill("black")
 
-  n = 800
   phi = τ / n # Angular Unit
 
   [0...n].forEach (i) ->
