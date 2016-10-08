@@ -22,6 +22,22 @@ canvas = TouchCanvas
   width: 360
   height: 360
 
+ParamTemplate = require "./templates/param"
+paramData = {}
+params = Observable []
+canvas.param = (name, properties) ->
+  console.log name, properties
+
+  properties.name = name
+  properties.value = Observable properties.value
+  updateParam = (value) ->
+    # TODO: Handle non-float values
+    paramData[name] = parseFloat value
+  updateParam properties.value()
+  properties.value.observe updateParam
+
+  params.push ParamTemplate properties
+
 run = ->
   program = CoffeeScript.compile editor.getValue(), bare: true
   execWithContext program,
@@ -65,6 +81,7 @@ document.body.appendChild Template
   pause: ->
     paused = !paused
 
+  params: params
   reset: reset
   time: time
   t: t
@@ -72,7 +89,7 @@ document.body.appendChild Template
 
 aceShim = require("./lib/ace-shim")()
 
-program = PACKAGE.source["program/9.coffee"].content
+program = PACKAGE.source["program/10.coffee"].content
 
 global.editor = aceShim.aceEditor()
 editor.setSession aceShim.initSession program, "coffee"
@@ -96,7 +113,7 @@ step = ->
   # Time Display
   time currentTime.toFixed(2)
   try
-    update.call(canvas, currentTime, canvas)
+    update.call(canvas, currentTime, canvas, paramData)
   t(dt() + currentTime) unless paused
   requestAnimationFrame step
 

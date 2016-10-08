@@ -1,11 +1,14 @@
 application
   #ace
-  actions
-    button(click=@render) Render
-    button(click=@reset) Reset
-    button(click=@pause) Pause
-    button(click=@run) Run
   viewport
     = @canvas
   span.time= @time
   input.t(value=@t type="range" step=@dt min=0 max=20)
+  toolbar
+    actions
+      button(click=@render) Render
+      button(click=@reset) Reset
+      button(click=@pause) Pause
+      button(click=@run) Run
+    params
+      = @params
