@@ -41,4 +41,4 @@ return (t, canvas, params) ->
       x: p.x
       y: p.y
       radius: 2
-      color: "blue"
+      color: "hsl(#{i / n * 360}, 100%, 50%)"

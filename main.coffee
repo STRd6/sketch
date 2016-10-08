@@ -103,6 +103,7 @@ execWithContext = (program, context={}) ->
   args = Object.keys(context)
   values = args.map (name) -> context[name]
 
+  params []
   update = Function(args..., program).apply(module, values)
 
 run()
