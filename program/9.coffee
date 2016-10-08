@@ -1,5 +1,5 @@
 return (t, canvas) ->
-  {abs, sin, cos, PI, min} = Math
+  {abs, sin, cos, PI, min, max, floor} = Math
   canvas = this
   width = canvas.width()
   height = canvas.height()
@@ -15,14 +15,14 @@ return (t, canvas) ->
   n = 800
   dt = τ / n
 
-  x = sin(t * τ / 8 + τ / 4)
+  x = cos(t * τ / 8)
 
   # See diagram on page 56-57 of Digital Harmony
   # Note: It seems more natural for me to number the TD one greater than Whitney
   # did, but for now I'm keeping it as he numbered it
   # TODO: Can these be generalized to complex values?
-  RD = 9 + x
-  TD = 11
+  RD = 1 + x
+  TD = 0
 
   [0...n].forEach (i) ->
     theta = (TD + 1) * i * dt

@@ -15,8 +15,8 @@ do applyStyle = ->
 TouchCanvas = require "touch-canvas"
 
 width = height = 360
-t = 0
-dt = 1/60
+t = Observable 0
+dt = Observable 1/60
 
 canvas = TouchCanvas
   width: 360
@@ -28,7 +28,7 @@ run = ->
     module: canvas
 
 reset = ->
-  t = 0
+  t(0)
 
 paused = false
 
@@ -67,6 +67,8 @@ document.body.appendChild Template
 
   reset: reset
   time: time
+  t: t
+  dt: dt
 
 aceShim = require("./lib/ace-shim")()
 
@@ -89,15 +91,18 @@ execWithContext = (program, context={}) ->
 run()
 
 step = ->
-  time t.toFixed(2)
+  # Ensure time is a number
+  currentTime = parseFloat(t()) or 0
+  # Time Display
+  time currentTime.toFixed(2)
   try
-    update.call(canvas, t, canvas)
-  t += dt unless paused
+    update.call(canvas, currentTime, canvas)
+  t(dt() + currentTime) unless paused
   requestAnimationFrame step
 
 step()
 
-render = 
+render =
   webm: ({duration, framerate}) ->
     renderWebm = require "./render-webm"
 

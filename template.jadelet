@@ -1,5 +1,4 @@
 application
-  span.time= @time
   #ace
   actions
     button(click=@render) Render
@@ -8,3 +7,5 @@ application
     button(click=@run) Run
   viewport
     = @canvas
+  span.time= @time
+  input.t(value=@t type="range" step=@dt min=0 max=20)
