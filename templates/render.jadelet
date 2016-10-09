@@ -1,5 +1,10 @@
 form(@submit)
   h1 Render
+  
+  label
+    h2 Start Time
+    input.small(value=@startTime)
+  
   label
     h2 Duration (s)
     input.small(value=@duration)

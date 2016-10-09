@@ -32,7 +32,7 @@ return (t, canvas, params) ->
   phi = τ / n # Angular Unit
 
   [0...n].forEach (i) ->
-    theta = TD * i * phi
+    theta = TD * i * phi * t
     # TODO: Explore generalizing this sin fn as a complex exponential
     r = -sin(RD * i * phi) * halfWidth
 

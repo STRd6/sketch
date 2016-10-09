@@ -51,6 +51,7 @@ paused = false
 RenderTemplate = require "./templates/render"
 
 renderOptions =
+  startTime: Observable(0)
   duration: Observable(2)
   framerate: Observable(30)
   format: Observable "gif"
@@ -73,8 +74,9 @@ document.body.appendChild Template
     Modal.show form, (data) ->
       if data
         render[data.format()]
-          duration: data.duration()
-          framerate: data.framerate()
+          duration: parseFloat data.duration()
+          framerate: parseFloat data.framerate()
+          startTime: parseFloat data.startTime()
       else
         console.log "cancelled"
 
@@ -121,13 +123,14 @@ step = ->
 step()
 
 render =
-  webm: ({duration, framerate}) ->
+  webm: ({duration, framerate, startTime}) ->
     renderWebm = require "./render-webm"
 
     renderWebm
       fn: update
       width: width
       height: height
+      startTime: startTime
       duration: duration
       framerate: framerate
       paramData: paramData
@@ -138,13 +141,14 @@ render =
       video.src = URL.createObjectURL(blob)
       document.body.appendChild video
 
-  gif: ({duration, framerate}) ->
+  gif: ({duration, framerate, startTime}) ->
     renderGif = require "./render-gif"
 
     renderGif
       fn: update
       width: width
       height: height
+      startTime: startTime
       duration: duration
       framerate: framerate
       paramData: paramData

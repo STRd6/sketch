@@ -4,12 +4,15 @@ Whammy = require "./lib/whammy"
 console.log Whammy
 
 module.exports = (options={}) ->
-  {fn, framerate, duration, width, height, paramData} = options
+  {fn, framerate, startTime, duration, width, height, paramData} = options
 
-  t = 0
+  console.log "Start", startTime
+
+  t = startTime
   width ?= 400
   height ?= 400
   duration ?= 1
+  endTime = startTime + duration
   framerate ?= 30
   dt = 1/framerate
 
@@ -28,9 +31,9 @@ module.exports = (options={}) ->
       encoder.add(canvas.context())
 
       i += 1
-      t = i / framerate
+      t = i / framerate + startTime
 
-      if t >= duration
+      if t >= endTime
         encoder.compile false, (output) ->
           resolve(output)
       else

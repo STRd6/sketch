@@ -7,12 +7,13 @@ console.log GIF
 workerURL = URL.createObjectURL(new Blob([PACKAGE.source["lib/gif-worker.js"].content]))
 
 module.exports = (options={}) ->
-  {fn, framerate, duration, width, height, paramData} = options
+  {fn, framerate, startTime, duration, width, height, paramData} = options
 
-  t = 0
+  t = startTime
   width ?= 400
   height ?= 400
   duration ?= 1
+  endTime = startTime + duration
   framerate ?= 30
   dt = 1/framerate
 
@@ -40,8 +41,8 @@ module.exports = (options={}) ->
       gif.addFrame(canvas.context(), copy: true, delay: dt * 1000)
 
       i += 1
-      t = i / framerate
-      if t >= duration
+      t = i / framerate + startTime
+      if t >= endTime
         gif.render()
       else
         requestAnimationFrame doFrame
