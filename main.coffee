@@ -130,6 +130,7 @@ render =
       height: height
       duration: duration
       framerate: framerate
+      paramData: paramData
     .then (blob) ->
       video = document.createElement "video"
       video.loop = true
@@ -139,13 +140,14 @@ render =
 
   gif: ({duration, framerate}) ->
     renderGif = require "./render-gif"
-  
+
     renderGif
       fn: update
       width: width
       height: height
       duration: duration
       framerate: framerate
+      paramData: paramData
     .then (blob) ->
       img = document.createElement "img"
       img.src = URL.createObjectURL(blob)

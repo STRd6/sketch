@@ -4,7 +4,7 @@ Whammy = require "./lib/whammy"
 console.log Whammy
 
 module.exports = (options={}) ->
-  {fn, framerate, duration, width, height} = options
+  {fn, framerate, duration, width, height, paramData} = options
 
   t = 0
   width ?= 400
@@ -24,7 +24,7 @@ module.exports = (options={}) ->
     doFrame = ->
       console.log "frame: ", i, t
 
-      fn.call(canvas, t, canvas)
+      fn.call(canvas, t, canvas, paramData)
       encoder.add(canvas.context())
 
       i += 1

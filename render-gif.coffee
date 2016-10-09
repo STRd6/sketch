@@ -7,7 +7,7 @@ console.log GIF
 workerURL = URL.createObjectURL(new Blob([PACKAGE.source["lib/gif-worker.js"].content]))
 
 module.exports = (options={}) ->
-  {fn, framerate, duration, width, height} = options
+  {fn, framerate, duration, width, height, paramData} = options
 
   t = 0
   width ?= 400
@@ -35,7 +35,7 @@ module.exports = (options={}) ->
     doFrame = ->
       console.log "frame: ", i, t
 
-      fn.call(canvas, t, canvas)
+      fn.call(canvas, t, canvas, paramData)
       # TODO: Make sure this dt doesn't accumulate errors
       gif.addFrame(canvas.context(), copy: true, delay: dt * 1000)
 
