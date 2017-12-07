@@ -1,3 +1,6 @@
+publish:
+  s3:
+    basePath: "public/danielx.net"
 dependencies:
   "cornerstone": "distri/cornerstone:master"
   "touch-canvas": "distri/touch-canvas:master"
