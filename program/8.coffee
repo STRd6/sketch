@@ -9,7 +9,7 @@ return (t, canvas) ->
   halfWidth = width/2
 
   τ = PI * 2
-  
+
   # t = sin(t * τ / 20) * 4
   w = t * τ
 
